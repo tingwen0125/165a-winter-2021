@@ -1,6 +1,15 @@
 from template.table import Table, Record
 from template.index import Index
-
+'''
+The Query class provides standard SQL operations such as insert, select,
+update, delete and sum. The select function returns the specified set of columns
+from the record with the given key (if available). The insert function will insert a new
+record in the table. All columns should be passed a non-NULL value when inserting. The
+update function updates values for the specified set of columns. The delete function
+will delete the record with the specified key from the table. The sum function will sum
+over the values of the selected column for a range of records specified by their key
+values. We query tables by direct function calls rather than parsing SQL queries.
+'''
 
 class Query:
     """
