@@ -13,7 +13,7 @@ specified table.
 class Database():
 
     def __init__(self):
-        self.tables = []
+        self.tables = {}
         pass
 
     # Not required for milestone1
@@ -31,16 +31,19 @@ class Database():
     """
     def create_table(self, name, num_columns, key):
         table = Table(name, num_columns, key)
+        self.tables[name]=table
         return table
 
     """
     # Deletes the specified table
     """
     def drop_table(self, name):
-        pass
+        return self.tables.pop(name)
+        
 
     """
     # Returns table with the passed name
     """
     def get_table(self, name):
-        pass
+        return self.tables[name]
+        

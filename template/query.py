@@ -38,9 +38,21 @@ class Query:
     # Returns False if insert fails for whatever reason
     """
     def insert(self, *columns):
-        schema_encoding = '0' * self.table.num_columns
+        schema_encoding = '0' * self.table.num_columns #string
         pass
 
+'''def function(*arg):
+    print (type(arg))
+    for i in arg:
+      print (i)
+
+
+>>> function(1,2,3)
+<class 'tuple'>
+1
+2
+3
+'''
     """
     # Read a record with specified key
     # :param key: the key value to select records based on

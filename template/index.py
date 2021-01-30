@@ -14,7 +14,7 @@ two functions create_index and drop_index (optional for this milestone).
 class Index:
 
     def __init__(self, table):
-        # One index for each table. All our empty initially.
+        # One index for each table. All are empty initially.
         self.indices = [None] *  table.num_columns
         pass
 

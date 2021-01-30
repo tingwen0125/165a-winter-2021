@@ -31,12 +31,14 @@ class Table:
     :param num_columns: int     #Number of Columns: all columns are integer
     :param key: int             #Index of table key in columns
     """
-    def __init__(self, name, num_columns, key):
+    def __init__(self, name, num_columns, key):  #need to set up the meta columns when initializing
         self.name = name
         self.key = key
         self.num_columns = num_columns
-        self.page_directory = {}
+        self.page_directory = {} 
+        #page directory: given a RID it returns the actual physical location of the record.
         self.index = Index(self)
+
         pass
 
     def __merge(self):
