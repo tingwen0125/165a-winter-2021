@@ -16,7 +16,7 @@ requires an internal page directory that given a RID it returns the actual physi
 of the record. The table class should also manage the periodical merge of its
 corresponding page ranges.
 '''
-
+#16 base pages in one page range
 class Record:
 
     def __init__(self, rid, key, columns):
@@ -37,10 +37,12 @@ class Table:
         self.num_columns = num_columns
         self.page_directory = {} 
         #page directory: given a RID it returns the actual physical location of the record.
+    
         self.index = Index(self)
-
+        
         pass
 
     def __merge(self):
+        #milestone 2
         pass
  

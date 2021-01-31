@@ -26,10 +26,12 @@ class Page:
             return False
 
     def write(self, value):  #what is value?
-        
+        start=self.num_records*8
+        end=(self.num_records+1)*8
         if self.has_capacity():
-            #add
-            pass
+            self.data[start:end]=value.to_bytes(8,'big')  #modify the self.data array
         self.num_records += 1
+
+
         
 

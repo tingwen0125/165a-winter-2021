@@ -10,3 +10,6 @@ will find more use when implementing persistence in the next milestone.
 
 PAGE_SIZE = 4096
 INT_SIZE = 8
+PAGE_RANGE_SIZE=64000
+
+BASE_PAGE_PER_PAGE_RANGE=PAGE_RANGE_SIZE/PAGE_SIZE
