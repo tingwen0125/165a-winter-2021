@@ -1,5 +1,7 @@
 from template.table import Table, Record
 from template.index import Index
+from template.page import Page, BasePage, PageRange,TailPage
+import datetime
 '''
 The Query class provides standard SQL operations such as insert, select,
 update, delete and sum. The select function returns the specified set of columns
@@ -25,12 +27,25 @@ class Query:
 
     """
     # internal Method
-    # Read a record with specified RID
+    # Read a record with specified key
     # Returns True upon succesful deletion
     # Return False if record doesn't exist or is locked due to 2PL
     """
     def delete(self, key):
-        pass
+        baseIndirection = self.table.BaseRIDToIndirection[self.table.keyToBaseRID[key]]
+        if baseIndirection == 0:
+            self.table.keyToBaseRID[key] = 0 #set baserid of the record with specified key to 0(invalid)
+        else:
+            t = self.table.TailRIDToIndirection
+            tailIndirection = t[baseIndirection]
+            while tailIndirection < 0: #while it is a tailrid
+                tempTailIndirection = tailIndirection
+                tailIndirection = t[tailIndirection]
+                tail_rid = list(t.keys())[list(t.values()).index(tempTailIndirection)]
+                tail_rid = 0
+            tail_rid = list(t.keys())[list(t.values()).index(tailIndirection)] 
+            tail_rid = 0
+            self.table.keyToBaseRID[key] = 0
 
     """
     # Insert a record with specified columns
@@ -38,21 +53,37 @@ class Query:
     # Returns False if insert fails for whatever reason
     """
     def insert(self, *columns):
-        schema_encoding = '0' * self.table.num_columns #string
-        pass
+        '''[0, 0, 20210131111207, 0, 906659671, 93, 0, 0, 0]'''
+        total_col = []
+        schema_encoding = int('0' * self.table.num_columns, 2)
+        time = datetime.datetime.now()
+        int_time = int(time.strftime("%Y%m%d%H%M%S"))
+        curPageRange = self.table.pageRanges[-1]
+        curBasePage = curPageRange.basePageList[-1]
 
-'''def function(*arg):
-    print (type(arg))
-    for i in arg:
-      print (i)
-
-
->>> function(1,2,3)
-<class 'tuple'>
-1
-2
-3
-'''
+        # open a new page range or new base page
+        if curPageRange.has_capacity() == False:
+            self.table.pageRanges.append(PageRange(self.table.num_columns))
+            curPageRange = self.table.pageRanges[-1]
+            curBasePage = curPageRange.basePageList[-1]
+        elif curBasePage.has_capacity() == False:
+            curPageRange.basePageList.append(BasePage(self.table.num_columns))
+            curBasePage = curPageRange.basePageList[-1]
+  
+        total_col.extend([0, self.table.baseRID, int_time, schema_encoding])
+        total_col += columns
+        for i in range(len(total_col)):
+            curBasePage.basePage[i].write(total_col[i])
+            start = (curBasePage.basePage[i].num_records - 1) * 8
+            end = curBasePage.basePage[i].num_records * 8
+            #test
+            int_val=int.from_bytes(curBasePage.basePage[i].data[start:end],'big')
+            print(int_val)
+        
+        self.table.keyToBaseRID[total_col[self.table.key + 4]] = self.table.baseRID
+        self.table.baseRID += 1
+        return True
+    
     """
     # Read a record with specified key
     # :param key: the key value to select records based on
@@ -62,6 +93,7 @@ class Query:
     # Assume that select will never be called on a key that doesn't exist
     """
     def select(self, key, column, query_columns):
+
         pass
 
     """
@@ -69,8 +101,35 @@ class Query:
     # Returns True if update is succesful
     # Returns False if no records exist with given key or if the target record cannot be accessed due to 2PL locking
     """
+    def getUpdateRID(self,key): 
+        return self.table.keyToBaseRID[key]
+
+    def getUpdatePageR(self,rid):
+        return self.table.getPageR(rid)
+
     def update(self, key, *columns):
-        pass
+        rid=self.getUpdateRID(key)
+        PageR=self.getUpdatePageR(rid)
+        #check if the tail page in that page range still have space
+        if self.table.pageRanges[PageR].tailPage_has_capacity() == False: #if no capacity, add a new tail page
+            self.table.pageRanges[PageR].tailPageList.append(TailPage(self.table.num_columns)) 
+        updateEncoding=""  #updated schema encoding
+        for i in range(len(columns)):
+            if columns[i] == None:
+                updateEncoding+"0"
+            else:
+                updateEncoding+"1"
+        updateEncoding=int(updateEncoding)
+        time = datetime.datetime.now()
+        int_time = int(time.strftime("%Y%m%d%H%M%S"))
+        tailrecord=[rid,self.table.tailRID,int_time,updateEncoding]+list(columns)
+        currTailPage=self.table.pageRanges[PageR].tailPageList[-1]
+        for i in range(len(tailrecord)):
+            currTailPage.tailPage[i].write(tailrecord[i])
+        self.table.tailRID +=1
+        return True
+        
+    
 
     """
     :param start_range: int         # Start of the key range to aggregate 
@@ -81,6 +140,7 @@ class Query:
     # Returns False if no record exists in the given range
     """
     def sum(self, start_range, end_range, aggregate_column_index):
+        
         pass
 
     """

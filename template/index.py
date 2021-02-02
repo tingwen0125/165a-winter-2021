@@ -16,6 +16,7 @@ class Index:
     def __init__(self, table):
         # One index for each table. All are empty initially.
         self.indices = [None] *  table.num_columns
+        self.table=table
         pass
 
     """
@@ -23,6 +24,7 @@ class Index:
     """
 
     def locate(self, column, value):
+        
         pass
 
     """

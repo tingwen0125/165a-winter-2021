@@ -31,18 +31,20 @@ class Table:
     :param num_columns: int     #Number of Columns: all columns are integer
     :param key: int             #Index of table key in columns
     """
-    def __init__(self, name, num_columns, key):  #need to set up the meta columns when initializing
+    def __init__(self, name, num_columns, key):
         self.name = name
         self.key = key
         self.num_columns = num_columns
-        self.page_directory = {} 
-        #page directory: given a RID it returns the actual physical location of the record.
-    
+        self.page_directory = {}
         self.index = Index(self)
-        
+        self.pageRanges = [PageRange(self.num_columns)]
+        self.keyToBaseRID = {} 
+        self.baseRID = 1
+        self.tailRID = 1
+
         pass
 
+    def getPageR(self,rid): #given rid return the page range the rid record is at
+        return rid//MAX_NUM_RECORD//BASE_PAGE_PER_PAGE_RANGE
     def __merge(self):
-        #milestone 2
         pass
- 

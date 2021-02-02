@@ -1,3 +1,4 @@
+
 from template.db import Database
 from template.query import Query
 from time import process_time
@@ -5,7 +6,7 @@ from random import choice, randrange
 
 # Student Id and 4 grades
 db = Database()
-grades_table = db.create_table('Grades', 0, 5)
+grades_table = db.create_table('Grades', 5, 0)
 query = Query(grades_table)
 keys = []
 

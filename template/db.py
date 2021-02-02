@@ -1,4 +1,4 @@
-from template.table import Table
+from table import Table
 
 '''
 The Database class is a general interface to the database and handles high-level

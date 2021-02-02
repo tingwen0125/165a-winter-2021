@@ -12,7 +12,6 @@ Each column has a physical page, and a base page is a set of such physical pages
 each column could have multiple page objects Within the same page range
 '''
 
-MAX_NUM_RECORD = PAGE_SIZE/INT_SIZE
 class Page:
 
     def __init__(self):
@@ -28,10 +27,43 @@ class Page:
     def write(self, value):  #what is value?
         start=self.num_records*8
         end=(self.num_records+1)*8
-        if self.has_capacity():
-            self.data[start:end]=value.to_bytes(8,'big')  #modify the self.data array
+        self.data[start:end]=value.to_bytes(8,'big')
         self.num_records += 1
+        
+class BasePage:
+    
+    def __init__(self, num_columns):
+        self.basePage = []
+        self.num_columns = num_columns
+        for i in range(4 + self.num_columns):
+            self.basePage.append(Page())
+            
+    def has_capacity(self):
+        return self.basePage[0].has_capacity()
 
+class TailPage:
+    def __init__(self, num_columns):
+        self.tailPage = []
+        self.num_columns = num_columns
+        for i in range(4 + self.num_columns):
+            self.tailPage.append(Page())
+            
+    def has_capacity(self):
+        return self.tailPage[0].has_capacity() #check if column 0 has capacity
 
+class PageRange:
+    
+    def __init__(self, num_columns):
+        self.num_columns = num_columns
+        self.basePageList = [BasePage(self.num_columns)]
+        self.tailPageList = [TailPage(self.num_columns)]
+        
+    def has_capacity(self):
+        return len(self.basePageList) < 16 | self.basePageList[-1].has_capacity()
+    
+    def tailPage_has_capacity(self):
+        return self.tailPageList[-1].has_capacity()
+        
+        
         
 
